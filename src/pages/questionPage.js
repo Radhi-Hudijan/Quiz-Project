@@ -81,8 +81,3 @@ const nextQuestion = () => {
   initQuestionPage();
 };
 
-// const incrementScore = (score) => {
-//   if (classToApply === correct) {
-//     score++
-//   }
-// }
