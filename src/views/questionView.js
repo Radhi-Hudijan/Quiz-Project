@@ -3,6 +3,7 @@
 import { ANSWERS_LIST_ID, MAX_QUESTIONS } from '../constants.js';
 import { NEXT_QUESTION_BUTTON_ID } from '../constants.js';
 import { quizData } from '../data.js';
+import { newScore } from '../pages/questionPage.js';
 
 /**
  * Create a full question element
@@ -27,7 +28,7 @@ export const createQuestionElement = (question) => {
       Score
     </p>
     <h3 class="hud-main-text">
-    0
+    ${newScore}
     </h3>
   </div>
 </div>
