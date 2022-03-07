@@ -64,7 +64,11 @@ export const initQuestionPage = () => {
   // Next question button
   document
     .getElementById(NEXT_QUESTION_BUTTON_ID)
-    .addEventListener('click', nextQuestion);
+    .addEventListener('click', event => {
+      if (!acceptingAnswers) {
+        nextQuestion()
+      } else { alert('ANSWER THE QUESTION') };
+    });
 };
 
 const nextQuestion = () => {
