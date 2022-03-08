@@ -4,6 +4,7 @@ import {
   ANSWERS_LIST_ID,
   NEXT_QUESTION_BUTTON_ID,
   USER_INTERFACE_ID,
+  MAX_QUESTIONS,
 } from '../constants.js';
 import { createQuestionElement } from '../views/questionView.js';
 import { createAnswerElement } from '../views/answerView.js';
@@ -12,14 +13,18 @@ export let newScore = 0;
 let acceptingAnswers = false;
 
 
+
+
+let questionElement;
+export let counter = 0;
+
 export const initQuestionPage = () => {
   const userInterface = document.getElementById(USER_INTERFACE_ID);
   userInterface.innerHTML = '';
-
   const currentQuestion = quizData.questions[quizData.currentQuestionIndex];
 
   //Creating the question HTML
-  const questionElement = createQuestionElement(currentQuestion.text);
+  questionElement = createQuestionElement(currentQuestion.text);
 
   userInterface.appendChild(questionElement);
 
@@ -39,6 +44,9 @@ export const initQuestionPage = () => {
   }
 
   function chooseAnswer() {
+    //STOP TIMER after answering last question
+    isLastAnswer()
+    //STOP TIMER
     // check if the question already loaded
     if (!acceptingAnswers) return;
     acceptingAnswers = false;
@@ -75,9 +83,33 @@ export const initQuestionPage = () => {
     });
 };
 
-const nextQuestion = () => {
-  quizData.currentQuestionIndex++;
+// ***************** START TIMER FUNC
+export const updateTimer = () => {
+  let sec = parseInt(counter % 60).toFixed(0)
+  let min = parseInt(counter / 60).toFixed(0);
+  if (sec < 10) {
+    sec = `0${sec}`
+  }
+  if (min < 10) {
+    min = `0${min}`
+  }
+  questionElement ? questionElement.querySelector("#chronometer").textContent = `${min}:${sec}` : ''
+}
+const timerInterval = setInterval(updateTimer, 50);
+const counterInterval = setInterval(function () { counter++ }, 1000);
+// ***************** START TIMER FUNC
 
+const nextQuestion = () => {
+
+  quizData.currentQuestionIndex = quizData.currentQuestionIndex + 1;
   initQuestionPage();
 };
+
+// CHECK IF IT IS LAST QUESTION THEN STOP TIMER WORKING
+const isLastAnswer = () => {
+  if ((quizData.currentQuestionIndex) == MAX_QUESTIONS - 1) {
+    clearInterval(timerInterval)
+    clearInterval(counterInterval)
+  }
+}
 
