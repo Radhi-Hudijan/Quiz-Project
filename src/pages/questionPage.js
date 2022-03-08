@@ -99,7 +99,6 @@ const nextQuestion = () => {
 // CHECK IF IT IS LAST QUESTION THEN STOP TIMER WORKING
 const isLastAnswer = () => {
   if ((quizData.currentQuestionIndex) == MAX_QUESTIONS - 1) {
-    console.log('merhaba');
     clearInterval(timerInterval)
     clearInterval(counterInterval)
   }
