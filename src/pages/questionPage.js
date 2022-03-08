@@ -9,10 +9,15 @@ import {
 import { createQuestionElement } from '../views/questionView.js';
 import { createAnswerElement } from '../views/answerView.js';
 import { quizData } from '../data.js';
-
+export let newScore = 0;
 let acceptingAnswers = false;
+
+
+
+
 let questionElement;
 export let counter = 0;
+
 export const initQuestionPage = () => {
   const userInterface = document.getElementById(USER_INTERFACE_ID);
   userInterface.innerHTML = '';
@@ -53,6 +58,9 @@ export const initQuestionPage = () => {
       currentQuestion.selected === currentQuestion.correct
         ? 'correct'
         : 'incorrect';
+      
+        if (classToApply === `correct`) newScore++;
+    
 
     if (currentQuestion.selected == currentQuestion.correct) {
       this.classList.add(classToApply);
@@ -92,6 +100,7 @@ const counterInterval = setInterval(function () { counter++ }, 1000);
 // ***************** START TIMER FUNC
 
 const nextQuestion = () => {
+
   quizData.currentQuestionIndex = quizData.currentQuestionIndex + 1;
   initQuestionPage();
 };
@@ -103,3 +112,4 @@ const isLastAnswer = () => {
     clearInterval(counterInterval)
   }
 }
+
