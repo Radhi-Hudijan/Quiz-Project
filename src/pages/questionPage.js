@@ -83,7 +83,7 @@ export const initQuestionPage = () => {
       if (!acceptingAnswers) {
         nextQuestion();
       } else {
-        alert('ANSWER THE QUESTION');
+        alert('PLEASE SELECT AN ANSWER');
       }
     });
 };
