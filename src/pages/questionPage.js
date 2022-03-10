@@ -14,7 +14,8 @@ let acceptingAnswers = false;
 
 let questionElement;
 export let counter = 0;
-
+let timerInterval;
+let counterInterval;
 export const initQuestionPage = () => {
   const userInterface = document.getElementById(USER_INTERFACE_ID);
   userInterface.innerHTML = '';
@@ -37,9 +38,8 @@ export const initQuestionPage = () => {
   //Update the progress bar
   const progressBarFull = document.getElementById('progressBarFull');
   const progressBarIndicator = quizData.currentQuestionIndex + 1;
-  progressBarFull.style.width = `${
-    (progressBarIndicator / MAX_QUESTIONS) * 100
-  }%`;
+  progressBarFull.style.width = `${(progressBarIndicator / MAX_QUESTIONS) * 100
+    }%`;
 
   acceptingAnswers = true;
   // add click event to answer choices and select the correct one
@@ -88,7 +88,7 @@ export const initQuestionPage = () => {
     });
 };
 
-// ***************** START TIMER FUNC
+// ***************** UPDATE TIMER
 export const updateTimer = () => {
   let sec = parseInt(counter % 60).toFixed(0);
   let min = parseInt(counter / 60).toFixed(0);
@@ -100,15 +100,10 @@ export const updateTimer = () => {
   }
   questionElement
     ? (questionElement.querySelector(
-        '#chronometer'
-      ).textContent = `${min}:${sec}`)
+      '#chronometer'
+    ).textContent = `${min}:${sec}`)
     : '';
 };
-const timerInterval = setInterval(updateTimer, 50);
-const counterInterval = setInterval(function () {
-  counter++;
-}, 1000);
-// ***************** START TIMER FUNC
 
 const nextQuestion = () => {
   quizData.currentQuestionIndex = quizData.currentQuestionIndex + 1;
@@ -122,3 +117,11 @@ const isLastAnswer = () => {
     clearInterval(counterInterval);
   }
 };
+// Call interval method
+export const setUpQuizIntervals = () => {
+  // TIMER INTERVALS
+  timerInterval = setInterval(updateTimer, 50);
+  counterInterval = setInterval(function () {
+    counter++;
+  }, 1000);
+}

@@ -2,8 +2,7 @@
 
 import { USER_INTERFACE_ID, START_QUIZ_BUTTON_ID } from '../constants.js';
 import { createWelcomeElement } from '../views/welcomeView.js';
-import { initQuestionPage } from './questionPage.js';
-import { updateTimer } from './questionPage.js';
+import { initQuestionPage, setUpQuizIntervals } from './questionPage.js';
 
 export const initWelcomePage = () => {
   const userInterface = document.getElementById(USER_INTERFACE_ID);
@@ -19,5 +18,5 @@ export const initWelcomePage = () => {
 
 const startQuiz = () => {
   initQuestionPage();
-  updateTimer();
+  setUpQuizIntervals();
 };
