@@ -86,11 +86,6 @@ export const initQuestionPage = () => {
         alert('PLEASE SELECT AN ANSWER');
       }
     });
-  // TIMER INTERVALS
-  timerInterval = setInterval(updateTimer, 50);
-  counterInterval = setInterval(function () {
-    counter++;
-  }, 1000);
 };
 
 // ***************** UPDATE TIMER
@@ -122,3 +117,11 @@ const isLastAnswer = () => {
     clearInterval(counterInterval);
   }
 };
+// Call interval method
+export const setUpQuizIntervals = () => {
+  // TIMER INTERVALS
+  timerInterval = setInterval(updateTimer, 50);
+  counterInterval = setInterval(function () {
+    counter++;
+  }, 1000);
+}
