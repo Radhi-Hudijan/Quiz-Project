@@ -8,7 +8,8 @@ import {
 } from '../constants.js';
 import { createQuestionElement } from '../views/questionView.js';
 import { createAnswerElement } from '../views/answerView.js';
-import { quizData } from '../data.js';
+import { quizData, saveToLocal} from '../data.js';
+import { localStorageObj} from '../app.js';
 export let newScore = 0;
 let acceptingAnswers = false;
 
@@ -63,7 +64,9 @@ export const initQuestionPage = () => {
         ? 'correct'
         : 'incorrect';
 
-    if (classToApply === `correct`) newScore++;
+    if (classToApply === `correct`) newScore++; // iterate score 
+    saveToLocal.localScore = newScore; // saving newScore in local storage object
+    window.localStorage.setItem('saveToLocal', JSON.stringify(saveToLocal)); // updating local storage
 
     if (currentQuestion.selected == currentQuestion.correct) {
       this.classList.add(classToApply);
@@ -106,7 +109,9 @@ export const updateTimer = () => {
 };
 
 const nextQuestion = () => {
-  quizData.currentQuestionIndex = quizData.currentQuestionIndex + 1;
+  quizData.currentQuestionIndex++;
+  saveToLocal.questionIndex = quizData.currentQuestionIndex; // saving question index to local storage object
+  window.localStorage.setItem('saveToLocal', JSON.stringify(saveToLocal)); // updating local storage
   initQuestionPage();
 };
 
@@ -124,4 +129,10 @@ export const setUpQuizIntervals = () => {
   counterInterval = setInterval(function () {
     counter++;
   }, 1000);
+}
+
+export const reloadScore = () => {
+  if (localStorageObj.localScore > 0) { 
+    newScore = localStorageObj.localScore;
+  }
 }
