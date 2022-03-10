@@ -12,9 +12,6 @@ import { quizData } from '../data.js';
 export let newScore = 0;
 let acceptingAnswers = false;
 
-
-
-
 let questionElement;
 export let counter = 0;
 
@@ -37,6 +34,13 @@ export const initQuestionPage = () => {
     answersListElement.appendChild(answerElement);
   }
 
+  //Update the progress bar
+  const progressBarFull = document.getElementById('progressBarFull');
+  const progressBarIndicator = quizData.currentQuestionIndex + 1;
+  progressBarFull.style.width = `${
+    (progressBarIndicator / MAX_QUESTIONS) * 100
+  }%`;
+
   acceptingAnswers = true;
   // add click event to answer choices and select the correct one
   for (const option of answersListElement.children) {
@@ -45,7 +49,7 @@ export const initQuestionPage = () => {
 
   function chooseAnswer() {
     //STOP TIMER after answering last question
-    isLastAnswer()
+    isLastAnswer();
     //STOP TIMER
     // check if the question already loaded
     if (!acceptingAnswers) return;
@@ -58,9 +62,8 @@ export const initQuestionPage = () => {
       currentQuestion.selected === currentQuestion.correct
         ? 'correct'
         : 'incorrect';
-      
-        if (classToApply === `correct`) newScore++;
-    
+
+    if (classToApply === `correct`) newScore++;
 
     if (currentQuestion.selected == currentQuestion.correct) {
       this.classList.add(classToApply);
@@ -76,40 +79,46 @@ export const initQuestionPage = () => {
   // Next question button
   document
     .getElementById(NEXT_QUESTION_BUTTON_ID)
-    .addEventListener('click', event => {
+    .addEventListener('click', (event) => {
       if (!acceptingAnswers) {
-        nextQuestion()
-      } else { alert('ANSWER THE QUESTION') };
+        nextQuestion();
+      } else {
+        alert('PLEASE SELECT AN ANSWER');
+      }
     });
 };
 
 // ***************** START TIMER FUNC
 export const updateTimer = () => {
-  let sec = parseInt(counter % 60).toFixed(0)
+  let sec = parseInt(counter % 60).toFixed(0);
   let min = parseInt(counter / 60).toFixed(0);
   if (sec < 10) {
-    sec = `0${sec}`
+    sec = `0${sec}`;
   }
   if (min < 10) {
-    min = `0${min}`
+    min = `0${min}`;
   }
-  questionElement ? questionElement.querySelector("#chronometer").textContent = `${min}:${sec}` : ''
-}
+  questionElement
+    ? (questionElement.querySelector(
+        '#chronometer'
+      ).textContent = `${min}:${sec}`)
+    : '';
+};
 const timerInterval = setInterval(updateTimer, 50);
-const counterInterval = setInterval(function () { counter++ }, 1000);
+const counterInterval = setInterval(function () {
+  counter++;
+}, 1000);
 // ***************** START TIMER FUNC
 
 const nextQuestion = () => {
-
   quizData.currentQuestionIndex = quizData.currentQuestionIndex + 1;
   initQuestionPage();
 };
 
 // CHECK IF IT IS LAST QUESTION THEN STOP TIMER WORKING
 const isLastAnswer = () => {
-  if ((quizData.currentQuestionIndex) == MAX_QUESTIONS - 1) {
-    clearInterval(timerInterval)
-    clearInterval(counterInterval)
+  if (quizData.currentQuestionIndex == MAX_QUESTIONS - 1) {
+    clearInterval(timerInterval);
+    clearInterval(counterInterval);
   }
-}
-
+};

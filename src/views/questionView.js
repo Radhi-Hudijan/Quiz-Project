@@ -6,7 +6,6 @@ import { quizData } from '../data.js';
 import { newScore } from '../pages/questionPage.js';
 import { counter } from '../pages/questionPage.js';
 
-
 /**
  * Create a full question element
  * @returns {Element}*/
@@ -18,12 +17,12 @@ export const createQuestionElement = (question) => {
   <div id="hud">
   <div id="hud-item">
     <p id="progressText" class="hud-prefix">
-      Question 
+      Question : ${quizData.currentQuestionIndex + 1} / ${MAX_QUESTIONS}
     </p>
-    <h3 class="hud-main-text">
-    ${quizData.currentQuestionIndex + 1} / ${MAX_QUESTIONS}
-    </h3>
+    <div id="progressBar">
+              <div id="progressBarFull"></div>
     </div>
+  </div>
     <div id="hud-item">
     <p class="hud-prefix">
       Timer 
