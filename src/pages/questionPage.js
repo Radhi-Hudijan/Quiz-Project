@@ -8,7 +8,7 @@ import {
 } from '../constants.js';
 import { createQuestionElement } from '../views/questionView.js';
 import { createAnswerElement } from '../views/answerView.js';
-import { quizData } from '../data.js';
+import { quizData, saveToLocal} from '../data.js';
 export let newScore = 0;
 let acceptingAnswers = false;
 
@@ -64,6 +64,8 @@ export const initQuestionPage = () => {
         : 'incorrect';
 
     if (classToApply === `correct`) newScore++;
+    saveToLocal.localScore = newScore;
+    window.localStorage.setItem('saveToLocal', JSON.stringify(saveToLocal));
 
     if (currentQuestion.selected == currentQuestion.correct) {
       this.classList.add(classToApply);
@@ -106,7 +108,9 @@ export const updateTimer = () => {
 };
 
 const nextQuestion = () => {
-  quizData.currentQuestionIndex = quizData.currentQuestionIndex + 1;
+  quizData.currentQuestionIndex++;
+  saveToLocal.questionIndex = quizData.currentQuestionIndex;
+  window.localStorage.setItem('saveToLocal', JSON.stringify(saveToLocal));
   initQuestionPage();
 };
 

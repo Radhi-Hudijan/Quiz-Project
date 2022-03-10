@@ -235,3 +235,6 @@ export const quizData = {
     },
   ],
 };
+
+export const saveToLocal = {}
+
