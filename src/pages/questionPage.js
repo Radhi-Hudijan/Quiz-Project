@@ -10,6 +10,8 @@ import { createQuestionElement } from '../views/questionView.js';
 import { createAnswerElement } from '../views/answerView.js';
 import { quizData, saveToLocal} from '../data.js';
 import { localStorageObj} from '../app.js';
+// import { initWelcomePage } from './welcomePage.js';
+import { initResultPage } from './resultPage.js';
 export let newScore = 0;
 let acceptingAnswers = false;
 
@@ -64,7 +66,7 @@ export const initQuestionPage = () => {
         ? 'correct'
         : 'incorrect';
 
-    if (classToApply === `correct`) newScore++; // iterate score 
+    if (classToApply === `correct`) newScore+= 10; // iterate score 
     saveToLocal.localScore = newScore; // saving newScore in local storage object
     window.localStorage.setItem('saveToLocal', JSON.stringify(saveToLocal)); // updating local storage
 
@@ -112,7 +114,12 @@ const nextQuestion = () => {
   quizData.currentQuestionIndex++;
   saveToLocal.questionIndex = quizData.currentQuestionIndex; // saving question index to local storage object
   window.localStorage.setItem('saveToLocal', JSON.stringify(saveToLocal)); // updating local storage
-  initQuestionPage();
+  if (quizData.currentQuestionIndex < 10) {
+    initQuestionPage();
+  } else {
+    initResultPage();
+    newScore = 0;
+  }
 };
 
 // CHECK IF IT IS LAST QUESTION THEN STOP TIMER WORKING
