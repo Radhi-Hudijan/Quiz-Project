@@ -3,7 +3,7 @@
 import { ANSWERS_LIST_ID, MAX_QUESTIONS } from '../constants.js';
 import { NEXT_QUESTION_BUTTON_ID } from '../constants.js';
 import { quizData } from '../data.js';
-import { newScore } from '../pages/questionPage.js';
+import { newScore, currentIndex } from '../pages/questionPage.js';
 import { counter } from '../pages/questionPage.js';
 
 /**
@@ -17,7 +17,7 @@ export const createQuestionElement = (question) => {
   <div id="hud">
   <div id="hud-item">
     <p id="progressText" class="hud-prefix">
-      Question : ${quizData.currentQuestionIndex + 1} / ${MAX_QUESTIONS}
+      Question : ${currentIndex + 1} / ${MAX_QUESTIONS}
     </p>
     <div id="progressBar">
               <div id="progressBarFull"></div>
