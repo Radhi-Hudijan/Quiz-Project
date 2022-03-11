@@ -8,20 +8,28 @@ import {
 } from '../constants.js';
 import { createQuestionElement } from '../views/questionView.js';
 import { createAnswerElement } from '../views/answerView.js';
-import { quizData, saveToLocal} from '../data.js';
-import { localStorageObj} from '../app.js';
-export let newScore = 0;
+import { quizData } from '../data.js';
+import { writeToLocal, getFromLocal, writeToLocalTimer, getFromLocalTimer, writeToLocalAnswer, getFromLocalAnswer } from '../localStorageService.js';
+const myStorage = getFromLocal();
+
+export let newScore = myStorage.newScore;
+export let counter = getFromLocalTimer();
+
+
 let acceptingAnswers = false;
 
 let questionElement;
-export let counter = 0;
+
 let timerInterval;
 let counterInterval;
+export let currentIndex = myStorage.questionIndex;
+
 export const initQuestionPage = () => {
   const userInterface = document.getElementById(USER_INTERFACE_ID);
   userInterface.innerHTML = '';
-  const currentQuestion = quizData.questions[quizData.currentQuestionIndex];
-
+  console.log(currentIndex);
+  const currentQuestion = quizData.questions[currentIndex];
+  console.log(currentQuestion);
   //Creating the question HTML
   questionElement = createQuestionElement(currentQuestion.text);
 
@@ -38,9 +46,8 @@ export const initQuestionPage = () => {
 
   //Update the progress bar
   const progressBarFull = document.getElementById('progressBarFull');
-  const progressBarIndicator = quizData.currentQuestionIndex + 1;
-  progressBarFull.style.width = `${(progressBarIndicator / MAX_QUESTIONS) * 100
-    }%`;
+  const progressBarIndicator = currentIndex + 1;
+  progressBarFull.style.width = `${(progressBarIndicator / MAX_QUESTIONS) * 100}%`;
 
   acceptingAnswers = true;
   // add click event to answer choices and select the correct one
@@ -49,14 +56,37 @@ export const initQuestionPage = () => {
   }
 
   function chooseAnswer() {
+    const localAnswers = getFromLocalAnswer();
+    // if (localAnswers && localAnswers[currentIndex]) {
+    //   acceptingAnswers = false;
+    //   currentQuestion.selected = localAnswers[currentIndex];
+    //   // set the correct and incorrect class to the answer selection
+    //   const classToApply =
+    //     currentQuestion.selected === currentQuestion.correct
+    //       ? 'correct'
+    //       : 'incorrect';
+    //   if (currentQuestion.selected == currentQuestion.correct) {
+    //     this.classList.add(classToApply);
+    //   } else {
+    //     this.classList.add(classToApply);
+    //     const correctAnswer = document.querySelector(
+    //       `li[data-key="${currentQuestion.correct}"]`
+    //     );
+    //     correctAnswer.classList.add('correct-answer');
+    //   }
+    //   return;
+    // }
+
     //STOP TIMER after answering last question
     isLastAnswer();
     //STOP TIMER
     // check if the question already loaded
     if (!acceptingAnswers) return;
-    acceptingAnswers = false;
 
-    currentQuestion.selected = this.dataset.key;
+    acceptingAnswers = false;
+    const answer = this.dataset.key;
+    currentQuestion.selected = answer;
+    writeToLocalAnswer(currentIndex, answer)
 
     // set the correct and incorrect class to the answer selection
     const classToApply =
@@ -64,10 +94,8 @@ export const initQuestionPage = () => {
         ? 'correct'
         : 'incorrect';
 
-    if (classToApply === `correct`) newScore++; // iterate score 
-    saveToLocal.localScore = newScore; // saving newScore in local storage object
-    window.localStorage.setItem('saveToLocal', JSON.stringify(saveToLocal)); // updating local storage
-
+    if (classToApply === `correct`) newScore++;
+    // set the correct and incorrect class to the answer selection
     if (currentQuestion.selected == currentQuestion.correct) {
       this.classList.add(classToApply);
     } else {
@@ -109,15 +137,14 @@ export const updateTimer = () => {
 };
 
 const nextQuestion = () => {
-  quizData.currentQuestionIndex++;
-  saveToLocal.questionIndex = quizData.currentQuestionIndex; // saving question index to local storage object
-  window.localStorage.setItem('saveToLocal', JSON.stringify(saveToLocal)); // updating local storage
+  currentIndex++;
+  writeToLocal(newScore, currentIndex);
   initQuestionPage();
 };
 
 // CHECK IF IT IS LAST QUESTION THEN STOP TIMER WORKING
 const isLastAnswer = () => {
-  if (quizData.currentQuestionIndex == MAX_QUESTIONS - 1) {
+  if (currentIndex == MAX_QUESTIONS - 1) {
     clearInterval(timerInterval);
     clearInterval(counterInterval);
   }
@@ -128,11 +155,7 @@ export const setUpQuizIntervals = () => {
   timerInterval = setInterval(updateTimer, 50);
   counterInterval = setInterval(function () {
     counter++;
+    writeToLocalTimer(counter);
   }, 1000);
 }
 
-export const reloadScore = () => {
-  if (localStorageObj.localScore > 0) { 
-    newScore = localStorageObj.localScore;
-  }
-}
