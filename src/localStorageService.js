@@ -41,3 +41,11 @@ export const getFromLocalTimer = () => {
     return localStorageItem || 0;
 
 }
+
+export const writeToLocalAnswerable = (answerable) => {
+    localStorage.setItem('isAnswerable', (answerable));
+}
+export const getFromLocalAnswerable = () => {
+    const answerable = localStorage.getItem('isAnswerable');
+    return answerable || true;
+}

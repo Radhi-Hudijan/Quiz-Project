@@ -9,27 +9,29 @@ import {
 import { createQuestionElement } from '../views/questionView.js';
 import { createAnswerElement } from '../views/answerView.js';
 import { quizData } from '../data.js';
-import { writeToLocal, getFromLocal, writeToLocalTimer, getFromLocalTimer, writeToLocalAnswer, getFromLocalAnswer } from '../localStorageService.js';
-const myStorage = getFromLocal();
+import { writeToLocal, getFromLocal, writeToLocalTimer, getFromLocalTimer, writeToLocalAnswer, getFromLocalAnswer, writeToLocalAnswerable, getFromLocalAnswerable } from '../localStorageService.js';
 
+const myStorage = getFromLocal();
 export let newScore = myStorage.newScore;
+export let currentIndex = myStorage.questionIndex;
+
 export let counter = getFromLocalTimer();
 
 
-let acceptingAnswers = false;
+let acceptingAnswers = getFromLocalAnswerable(); //We must get this value from local storage
 
 let questionElement;
 
 let timerInterval;
 let counterInterval;
-export let currentIndex = myStorage.questionIndex;
+
 
 export const initQuestionPage = () => {
   const userInterface = document.getElementById(USER_INTERFACE_ID);
   userInterface.innerHTML = '';
-  console.log(currentIndex);
+
   const currentQuestion = quizData.questions[currentIndex];
-  console.log(currentQuestion);
+
   //Creating the question HTML
   questionElement = createQuestionElement(currentQuestion.text);
 
@@ -49,70 +51,76 @@ export const initQuestionPage = () => {
   const progressBarIndicator = currentIndex + 1;
   progressBarFull.style.width = `${(progressBarIndicator / MAX_QUESTIONS) * 100}%`;
 
-  acceptingAnswers = true;
+  // acceptingAnswers = true;
+  // writeToLocalAnswerable(acceptingAnswers);
+
+  // acceptingAnswers = true;
   // add click event to answer choices and select the correct one
   for (const option of answersListElement.children) {
-    option.addEventListener('click', chooseAnswer);
-  }
-
-  function chooseAnswer() {
     const localAnswers = getFromLocalAnswer();
-    // if (localAnswers && localAnswers[currentIndex]) {
-    //   acceptingAnswers = false;
-    //   currentQuestion.selected = localAnswers[currentIndex];
-    //   // set the correct and incorrect class to the answer selection
-    //   const classToApply =
-    //     currentQuestion.selected === currentQuestion.correct
-    //       ? 'correct'
-    //       : 'incorrect';
-    //   if (currentQuestion.selected == currentQuestion.correct) {
-    //     this.classList.add(classToApply);
-    //   } else {
-    //     this.classList.add(classToApply);
-    //     const correctAnswer = document.querySelector(
-    //       `li[data-key="${currentQuestion.correct}"]`
-    //     );
-    //     correctAnswer.classList.add('correct-answer');
-    //   }
-    //   return;
-    // }
+    acceptingAnswers = getFromLocalAnswerable();
+    option.addEventListener('click', function () {
+      if (!acceptingAnswers) {
+        currentQuestion.selected = localAnswers[currentIndex];
+        const classToApply =
+          currentQuestion.selected === currentQuestion.correct
+            ? 'correct'
+            : 'incorrect';
+        if (currentQuestion.selected == currentQuestion.correct) {
+          this.classList.add(classToApply);
+        } else {
+          this.classList.add(classToApply);
+          const correctAnswer = document.querySelector(
+            `li[data-key="${currentQuestion.correct}"]`
+          );
+          correctAnswer.classList.add('correct-answer');
+        }
+      } else {
 
-    //STOP TIMER after answering last question
-    isLastAnswer();
-    //STOP TIMER
-    // check if the question already loaded
-    if (!acceptingAnswers) return;
+        //Stop timer answering last question
+        isLastAnswer();
 
-    acceptingAnswers = false;
-    const answer = this.dataset.key;
-    currentQuestion.selected = answer;
-    writeToLocalAnswer(currentIndex, answer)
+        // check if the question already loaded
+        acceptingAnswers = false;
+        writeToLocalAnswerable(acceptingAnswers);
+        console.log(this);
+        const answer = this.dataset.key;
+        currentQuestion.selected = answer;
+        writeToLocalAnswer(currentIndex, answer)
 
-    // set the correct and incorrect class to the answer selection
-    const classToApply =
-      currentQuestion.selected === currentQuestion.correct
-        ? 'correct'
-        : 'incorrect';
+        // set the correct and incorrect class to the answer selection
+        const classToApply =
+          currentQuestion.selected === currentQuestion.correct
+            ? 'correct'
+            : 'incorrect';
 
-    if (classToApply === `correct`) newScore++;
-    // set the correct and incorrect class to the answer selection
-    if (currentQuestion.selected == currentQuestion.correct) {
-      this.classList.add(classToApply);
-    } else {
-      this.classList.add(classToApply);
-      const correctAnswer = document.querySelector(
-        `li[data-key="${currentQuestion.correct}"]`
-      );
-      correctAnswer.classList.add('correct-answer');
-    }
+        if (classToApply === `correct`) newScore++;
+        // set the correct and incorrect class to the answer selection
+        if (currentQuestion.selected == currentQuestion.correct) {
+          this.classList.add(classToApply);
+        } else {
+          this.classList.add(classToApply);
+          const correctAnswer = document.querySelector(
+            `li[data-key="${currentQuestion.correct}"]`
+          );
+          correctAnswer.classList.add('correct-answer');
+        }
+      }
+    });
   }
 
-  // Next question button
+  // function chooseAnswer() {
+
+  // }
+
+  // Next question button 
   document
     .getElementById(NEXT_QUESTION_BUTTON_ID)
     .addEventListener('click', (event) => {
       if (!acceptingAnswers) {
         nextQuestion();
+        acceptingAnswers = true;
+        writeToLocalAnswerable(acceptingAnswers);
       } else {
         alert('PLEASE SELECT AN ANSWER');
       }
