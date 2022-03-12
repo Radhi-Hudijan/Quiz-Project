@@ -42,10 +42,10 @@ export const getFromLocalTimer = () => {
 
 }
 
-export const writeToLocalAnswerable = (answerable) => {
-    localStorage.setItem('isAnswerable', (answerable));
+export const writeToLocalIsAnswered = (IsAnswered) => {
+    localStorage.setItem('IsAnswered', (IsAnswered));
 }
-export const getFromLocalAnswerable = () => {
-    const answerable = localStorage.getItem('isAnswerable');
-    return answerable || true;
+export const getFromLocalIsAnswered = () => {
+    const IsAnswered = localStorage.getItem('IsAnswered') === 'true' ? true : false;
+    return IsAnswered;
 }
