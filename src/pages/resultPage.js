@@ -3,7 +3,7 @@
 import { USER_INTERFACE_ID, START_QUIZ_BUTTON_ID } from '../constants.js';
 import { initWelcomePage } from './welcomePage.js';
 import { createResultElement } from '../views/resultView.js';
-import { setUpQuizIntervals } from './questionPage.js';
+import { writeToLocal } from '../localStorageService.js'
 
 export const initResultPage = () => {
   const userInterface = document.getElementById(USER_INTERFACE_ID);
@@ -14,10 +14,10 @@ export const initResultPage = () => {
 
   document
     .getElementById(START_QUIZ_BUTTON_ID)
-    .addEventListener('click', startQuiz);
+    .addEventListener('click', reStartQuiz);
 };
 
-const startQuiz = () => {
-  setUpQuizIntervals();
+const reStartQuiz = () => {
+  writeToLocal(0, 0);
   initWelcomePage();
 };

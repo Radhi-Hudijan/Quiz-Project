@@ -88,7 +88,7 @@ export const quizData = {
         a: 'for(let i = 0; i <= 5)',
         b: 'for let i = 1 to 5',
         c: 'for let(i <=5; i++)',
-        d: 'for (let i = 0; i <= 5;i++',
+        d: 'for (let i = 0; i <= 5;i++)',
       },
       correct: 'd',
       selected: null,

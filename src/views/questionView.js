@@ -2,14 +2,16 @@
 
 import { ANSWERS_LIST_ID, MAX_QUESTIONS } from '../constants.js';
 import { NEXT_QUESTION_BUTTON_ID } from '../constants.js';
-import { quizData } from '../data.js';
 import { newScore, currentIndex } from '../pages/questionPage.js';
-import { counter } from '../pages/questionPage.js';
 
 /**
  * Create a full question element
  * @returns {Element}*/
+
 export const createQuestionElement = (question) => {
+  let buttonText = "Next Question";
+  currentIndex == 9 ? buttonText = "Show Results" : buttonText = "Next Question";
+
   const element = document.createElement('div');
   element.classList.add('flex-center', 'flex-column');
   // I use String.raw just to get fancy colors for the HTML in VS Code.
@@ -46,7 +48,7 @@ export const createQuestionElement = (question) => {
 </ul>
 
 <button id="${NEXT_QUESTION_BUTTON_ID}" class="btn">
-Next question
+${buttonText}
 </button>
 `;
 

@@ -3,8 +3,6 @@ export const writeToLocal = (newScore, index) => {
         newScore: newScore,
         questionIndex: index
     };
-    console.log(storageItem);
-    console.log(newScore);
     localStorage.setItem('storageItem', JSON.stringify(storageItem));
 }
 export const getFromLocal = () => {
