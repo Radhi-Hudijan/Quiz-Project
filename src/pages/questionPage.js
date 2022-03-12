@@ -11,26 +11,33 @@ import { createAnswerElement } from '../views/answerView.js';
 import { quizData } from '../data.js';
 import { writeToLocal, getFromLocal, writeToLocalTimer, getFromLocalTimer, writeToLocalAnswer, getFromLocalAnswer, writeToLocalIsAnswered, getFromLocalIsAnswered } from '../localStorageService.js';
 import { initResultPage } from './resultPage.js';
-const myStorage = getFromLocal();
-
-export let newScore = myStorage.newScore;
-export let counter = getFromLocalTimer();
+let myStorage;
+export let newScore;
+export let counter;
 
 let questionElement;
 
 let timerInterval;
 let counterInterval;
-export let currentIndex = myStorage.questionIndex;
+export let currentIndex;
 
 export const initQuestionPage = () => {
+  // Reading values from local storage
+  myStorage = getFromLocal();
+  newScore = myStorage.newScore;
+  currentIndex = myStorage.questionIndex;
+  counter = getFromLocalTimer();
+
+  // Selecting user interface
   const userInterface = document.getElementById(USER_INTERFACE_ID);
   userInterface.innerHTML = '';
   const currentQuestion = quizData.questions[currentIndex];
-  //Creating the question HTML
-  questionElement = createQuestionElement(currentQuestion.text);
 
+  //Getting the question text
+  questionElement = createQuestionElement(currentQuestion.text);
   userInterface.appendChild(questionElement);
 
+  // Selecting the answer list
   const answersListElement = document.getElementById(ANSWERS_LIST_ID);
 
   //Creating answer list and add Data key attribute
@@ -40,7 +47,7 @@ export const initQuestionPage = () => {
     answersListElement.appendChild(answerElement);
   }
 
-  //Update the progress bar
+  //Selecting the progress bar
   const progressBarFull = document.getElementById('progressBarFull');
   const progressBarIndicator = currentIndex + 1;
   progressBarFull.style.width = `${(progressBarIndicator / MAX_QUESTIONS) * 100}%`;
@@ -59,9 +66,7 @@ export const initQuestionPage = () => {
     }
   }
 
-
   function chooseAnswer() {
-
     //STOP TIMER after answering last question
     isLastAnswer();
 
@@ -73,18 +78,20 @@ export const initQuestionPage = () => {
     writeToLocalAnswer(currentIndex, answer)
     writeToLocalIsAnswered(true);
 
-    // set the correct and incorrect class to the answer selection
+    // Style the answer, add the class to the li
     const classToApply =
       currentQuestion.selected === currentQuestion.correct
         ? 'correct'
         : 'incorrect';
 
-    if (classToApply === `correct`) newScore+= 10;
     // set the correct and incorrect class to the answer selection
     if (currentQuestion.selected == currentQuestion.correct) {
       this.classList.add(classToApply);
+      newScore += 10;
     } else {
+      // this wrong answer
       this.classList.add(classToApply);
+      // show the correct answers
       const correctAnswer = document.querySelector(
         `li[data-key="${currentQuestion.correct}"]`
       );
@@ -126,8 +133,8 @@ export const updateTimer = () => {
 const nextQuestion = () => {
   currentIndex++;
   if (currentIndex < 10) {
-  writeToLocal(newScore, currentIndex);
-  initQuestionPage();
+    writeToLocal(newScore, currentIndex);
+    initQuestionPage();
   }
   else {
     initResultPage();
@@ -139,6 +146,7 @@ const isLastAnswer = () => {
   if (currentIndex == MAX_QUESTIONS - 1) {
     clearInterval(timerInterval);
     clearInterval(counterInterval);
+    writeToLocalTimer(0);
   }
 };
 // Call interval method
@@ -151,6 +159,7 @@ export const setUpQuizIntervals = () => {
   }, 1000);
 }
 
+// answer as a b c d to 0 1 2 3 indexes
 const selectedAnswerToIndex = (answer) => {
   return answer === 'a' ? 0 : answer === 'b' ? 1 : answer === 'c' ? 2 : 3;
 }
