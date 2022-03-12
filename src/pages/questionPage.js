@@ -9,14 +9,11 @@ import {
 import { createQuestionElement } from '../views/questionView.js';
 import { createAnswerElement } from '../views/answerView.js';
 import { quizData } from '../data.js';
-import { writeToLocal, getFromLocal, writeToLocalTimer, getFromLocalTimer, writeToLocalAnswer, getFromLocalAnswer } from '../localStorageService.js';
+import { writeToLocal, getFromLocal, writeToLocalTimer, getFromLocalTimer, writeToLocalAnswer, getFromLocalAnswer, writeToLocalIsAnswered, getFromLocalIsAnswered } from '../localStorageService.js';
 const myStorage = getFromLocal();
 
 export let newScore = myStorage.newScore;
 export let counter = getFromLocalTimer();
-
-
-let acceptingAnswers = false;
 
 let questionElement;
 
@@ -27,9 +24,7 @@ export let currentIndex = myStorage.questionIndex;
 export const initQuestionPage = () => {
   const userInterface = document.getElementById(USER_INTERFACE_ID);
   userInterface.innerHTML = '';
-  console.log(currentIndex);
   const currentQuestion = quizData.questions[currentIndex];
-  console.log(currentQuestion);
   //Creating the question HTML
   questionElement = createQuestionElement(currentQuestion.text);
 
@@ -49,44 +44,33 @@ export const initQuestionPage = () => {
   const progressBarIndicator = currentIndex + 1;
   progressBarFull.style.width = `${(progressBarIndicator / MAX_QUESTIONS) * 100}%`;
 
-  acceptingAnswers = true;
   // add click event to answer choices and select the correct one
-  for (const option of answersListElement.children) {
-    option.addEventListener('click', chooseAnswer);
+  if (getFromLocalIsAnswered()) {
+    const localAnswer = getFromLocalAnswer()[currentIndex];
+
+    answersListElement.children[selectedAnswerToIndex(localAnswer)].addEventListener('click', chooseAnswer);
+    writeToLocalIsAnswered(false);
+    answersListElement.children[selectedAnswerToIndex(localAnswer)].click();
+
+  } else {
+    for (const option of answersListElement.children) {
+      option.addEventListener('click', chooseAnswer);
+    }
   }
 
+
   function chooseAnswer() {
-    const localAnswers = getFromLocalAnswer();
-    // if (localAnswers && localAnswers[currentIndex]) {
-    //   acceptingAnswers = false;
-    //   currentQuestion.selected = localAnswers[currentIndex];
-    //   // set the correct and incorrect class to the answer selection
-    //   const classToApply =
-    //     currentQuestion.selected === currentQuestion.correct
-    //       ? 'correct'
-    //       : 'incorrect';
-    //   if (currentQuestion.selected == currentQuestion.correct) {
-    //     this.classList.add(classToApply);
-    //   } else {
-    //     this.classList.add(classToApply);
-    //     const correctAnswer = document.querySelector(
-    //       `li[data-key="${currentQuestion.correct}"]`
-    //     );
-    //     correctAnswer.classList.add('correct-answer');
-    //   }
-    //   return;
-    // }
 
     //STOP TIMER after answering last question
     isLastAnswer();
-    //STOP TIMER
-    // check if the question already loaded
-    if (!acceptingAnswers) return;
 
-    acceptingAnswers = false;
+    // check if the question already loaded
+    if (getFromLocalIsAnswered()) return;
+
     const answer = this.dataset.key;
     currentQuestion.selected = answer;
     writeToLocalAnswer(currentIndex, answer)
+    writeToLocalIsAnswered(true);
 
     // set the correct and incorrect class to the answer selection
     const classToApply =
@@ -111,8 +95,10 @@ export const initQuestionPage = () => {
   document
     .getElementById(NEXT_QUESTION_BUTTON_ID)
     .addEventListener('click', (event) => {
-      if (!acceptingAnswers) {
+      if (getFromLocalIsAnswered()) {
+        writeToLocalIsAnswered(false);
         nextQuestion();
+
       } else {
         alert('PLEASE SELECT AN ANSWER');
       }
@@ -159,3 +145,6 @@ export const setUpQuizIntervals = () => {
   }, 1000);
 }
 
+const selectedAnswerToIndex = (answer) => {
+  return answer === 'a' ? 0 : answer === 'b' ? 1 : answer === 'c' ? 2 : 3;
+}

@@ -41,3 +41,11 @@ export const getFromLocalTimer = () => {
     return localStorageItem || 0;
 
 }
+
+export const writeToLocalIsAnswered = (IsAnswered) => {
+    localStorage.setItem('IsAnswered', (IsAnswered));
+}
+export const getFromLocalIsAnswered = () => {
+    const IsAnswered = localStorage.getItem('IsAnswered') === 'true' ? true : false;
+    return IsAnswered;
+}
