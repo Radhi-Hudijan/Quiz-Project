@@ -10,6 +10,7 @@ import { createQuestionElement } from '../views/questionView.js';
 import { createAnswerElement } from '../views/answerView.js';
 import { quizData } from '../data.js';
 import { writeToLocal, getFromLocal, writeToLocalTimer, getFromLocalTimer, writeToLocalAnswer, getFromLocalAnswer, writeToLocalIsAnswered, getFromLocalIsAnswered } from '../localStorageService.js';
+import { initResultPage } from './resultPage.js';
 const myStorage = getFromLocal();
 
 export let newScore = myStorage.newScore;
@@ -78,7 +79,7 @@ export const initQuestionPage = () => {
         ? 'correct'
         : 'incorrect';
 
-    if (classToApply === `correct`) newScore++;
+    if (classToApply === `correct`) newScore+= 10;
     // set the correct and incorrect class to the answer selection
     if (currentQuestion.selected == currentQuestion.correct) {
       this.classList.add(classToApply);
@@ -124,8 +125,13 @@ export const updateTimer = () => {
 
 const nextQuestion = () => {
   currentIndex++;
+  if (currentIndex < 10) {
   writeToLocal(newScore, currentIndex);
   initQuestionPage();
+  }
+  else {
+    initResultPage();
+  }
 };
 
 // CHECK IF IT IS LAST QUESTION THEN STOP TIMER WORKING
